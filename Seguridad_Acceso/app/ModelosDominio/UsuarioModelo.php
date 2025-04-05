@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modelos;
+namespace App\ModelosDominio;
 
 use Ramsey\Uuid\Type\Integer;
 
