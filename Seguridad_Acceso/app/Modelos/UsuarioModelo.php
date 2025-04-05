@@ -2,16 +2,21 @@
 
 namespace App\Modelos;
 
+use Ramsey\Uuid\Type\Integer;
+
 class UsuarioModelo
 {
-    private string $correo = '';
+    private string $correo;
+    private string $nip;
+    private Integer $cantidadIntentos;
+    private bool $estado;
 
-    public function __construct(string $correo = '')
+    public function __construct(string $correo, string $nip)
     {
         $this->correo = $correo;
+        $this->nip = $nip;
     }
 
-    // Getter y Setter si es necesario
     public function getCorreo(): string
     {
         return $this->correo;
@@ -22,4 +27,33 @@ class UsuarioModelo
         $this->correo = $correo;
     }
 
+    public function getNip(): string
+    {
+        return $this->nip;
+    }
+
+    public function setNip(string $nip): void
+    {
+        $this->nip = $nip;
+    }
+
+    public function getCantidadIntentos(): Integer
+    {
+        return $this->cantidadIntentos;
+    }
+
+    public function setCantidadIntentos(Integer $cantidadIntentos): void
+    {
+        $this->cantidadIntentos = $cantidadIntentos;
+    }
+
+    public function getEstado(): bool
+    {
+        return $this->estado;
+    }
+
+    public function setEstado(bool $estado): void
+    {
+        $this->estado = $estado;
+    }
 }
