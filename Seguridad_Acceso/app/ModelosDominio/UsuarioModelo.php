@@ -10,19 +10,23 @@ class UsuarioModelo
     private string $nip;
     private int $cantidadIntentos;
     private bool $estado;
+    private ServiciosTecnicos $serviciosTecnicos;
 
     public function __construct(string $correo, string $nip)
     {
         $this->correo = $correo;
         $this->nip = $nip;
+        $this->serviciosTecnicos = new ServiciosTecnicos();
     }
 
-    public function existeCorreo(ServiciosTecnicos $serviciosTecnicos, $correo): bool {
-        $existe = $serviciosTecnicos->buscarCorreo($correo);
+    public function registrarUsuario() {
+        $existe = $this->serviciosTecnicos->buscarCorreo($this->correo);
         if ($existe === null) {
+            $this->serviciosTecnicos->insertUsuario($this->correo, $this->nip);
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     public function getCorreo(): string

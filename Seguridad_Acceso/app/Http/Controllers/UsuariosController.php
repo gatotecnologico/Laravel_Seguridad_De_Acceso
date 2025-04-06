@@ -19,12 +19,10 @@ class UsuariosController extends Controller
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
-
-        $existe = $usuarioModelo->existeCorreo($this->serviciosTecnicos, $correo);
+        $existe = $usuarioModelo->registrarUsuario();
         if ($existe === false) {
-            $this->serviciosTecnicos->insertUsuario($usuarioModelo);
             return redirect()->route('login')->with('success', 'Usuario creado con éxito');
-        } else if ($existe === true) {
+        } else {
             return back()->with('error', 'Ya existe un usuario con ese correo');
         }
     }

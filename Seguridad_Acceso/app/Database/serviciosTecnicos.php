@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Hash;
 
 class ServiciosTecnicos
 {
-    public function insertUsuario(UsuarioModelo $usuarioModelo): void {
+    public function insertUsuario($correo, $nip): void {
         $nuevoUsuario = new Usuario();
-        $nuevoUsuario->correo = $usuarioModelo->getCorreo();
-        $nuevoUsuario->nip = Hash::make($usuarioModelo->getNip());
+        $nuevoUsuario->correo = $correo;
+        $nuevoUsuario->nip = Hash::make($nip);
         $nuevoUsuario->save();
     }
 
