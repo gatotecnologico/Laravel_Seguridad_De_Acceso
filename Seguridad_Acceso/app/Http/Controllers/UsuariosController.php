@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 class UsuariosController extends Controller
 {
     private ServiciosTecnicos $serviciosTecnicos;
-    public function __construct() {
+    public function __construct()
+    {
         $this->serviciosTecnicos = new serviciosTecnicos();
     }
 
@@ -18,13 +19,13 @@ class UsuariosController extends Controller
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
-
+    
         $existe = $usuarioModelo->existeCorreo($this->serviciosTecnicos, $correo);
         if ($existe === false) {
             $this->serviciosTecnicos->insertUsuario($usuarioModelo);
-            return 'Usuario creado con exito';
+            return redirect()->route('login')->with('success', 'Usuario creado con éxito');
         } else if ($existe === true) {
-            return 'Ya existe un usuario con ese correo';
+            return back()->with('error', 'Ya existe un usuario con ese correo');
         }
     }
 }
