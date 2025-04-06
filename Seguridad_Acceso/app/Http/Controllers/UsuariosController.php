@@ -9,12 +9,9 @@ use Illuminate\Http\Request;
 
 class UsuariosController extends Controller
 {
-    private static UsuarioModelo $usuario;
-    private static ServiciosTecnicos $serviciosTecnicos;
+    private ServiciosTecnicos $serviciosTecnicos;
     public function __construct() {
-        if(self::$serviciosTecnicos === null){
-            self::$serviciosTecnicos = new serviciosTecnicos();
-        }
+        $this->serviciosTecnicos = new serviciosTecnicos();
     }
 
     public function registrarUsuario(Request $request) {
@@ -25,6 +22,7 @@ class UsuariosController extends Controller
         $existe = $usuarioModelo->existeCorreo($this->serviciosTecnicos, $correo);
         if ($existe === false) {
             $this->serviciosTecnicos->insertUsuario($usuarioModelo);
+            return 'Usuario creado con exito';
         } else if ($existe === true) {
             return 'Ya existe un usuario con ese correo';
         }

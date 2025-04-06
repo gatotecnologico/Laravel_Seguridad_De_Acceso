@@ -3,13 +3,12 @@
 namespace App\ModelosDominio;
 
 use App\Database\ServiciosTecnicos;
-use Ramsey\Uuid\Type\Integer;
 
 class UsuarioModelo
 {
     private string $correo;
     private string $nip;
-    private Integer $cantidadIntentos;
+    private int $cantidadIntentos;
     private bool $estado;
 
     public function __construct(string $correo, string $nip)
@@ -46,12 +45,12 @@ class UsuarioModelo
         $this->nip = $nip;
     }
 
-    public function getCantidadIntentos(): Integer
+    public function getCantidadIntentos(): int
     {
         return $this->cantidadIntentos;
     }
 
-    public function setCantidadIntentos(Integer $cantidadIntentos): void
+    public function setCantidadIntentos(int $cantidadIntentos): void
     {
         $this->cantidadIntentos = $cantidadIntentos;
     }
