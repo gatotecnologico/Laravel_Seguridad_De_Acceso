@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        $usuario = new Usuario();
-        $usuario->correo = 'clementin@gmail.com';
-        $usuario->nip = '123456';
-        $usuario->save();
+        // $usuario = new Usuario();
+        // $usuario->correo = 'clementin@gmail.com';
+        // $usuario->nip = '123456';
+        // $usuario->save();
     }
 }

@@ -19,7 +19,7 @@ class UsuariosController extends Controller
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
-    
+
         $existe = $usuarioModelo->existeCorreo($this->serviciosTecnicos, $correo);
         if ($existe === false) {
             $this->serviciosTecnicos->insertUsuario($usuarioModelo);
@@ -27,5 +27,25 @@ class UsuariosController extends Controller
         } else if ($existe === true) {
             return back()->with('error', 'Ya existe un usuario con ese correo');
         }
+    }
+
+    public function logIn(Request $request) {
+
+        $correo = $request->input('email');
+        $contra = $request->input('password');
+        $usuarioModelo = new UsuarioModelo($correo, $contra);
+
+        $usuarioExiste = $this->serviciosTecnicos->login($correo, $contra);
+        if ($usuarioExiste != null) {
+            return view('usuario', ['usuario'=>$usuarioModelo]);
+        } else if ($usuarioExiste === null) {
+            return back()->with('error', 'Contraseña o correo invalido');
+        }
+    }
+
+    public function indexUsuario($correo)
+    {
+        $usuarioModelo = $this->serviciosTecnicos->buscarCorreo($correo);
+        return view('usuario', ['usuario'=>$usuarioModelo]);
     }
 }
