@@ -2,6 +2,7 @@
 
 namespace App\ModelosDominio;
 
+use App\Database\ServiciosTecnicos;
 use Ramsey\Uuid\Type\Integer;
 
 class UsuarioModelo
@@ -15,6 +16,14 @@ class UsuarioModelo
     {
         $this->correo = $correo;
         $this->nip = $nip;
+    }
+
+    public function existeCorreo(ServiciosTecnicos $serviciosTecnicos, $correo): bool {
+        $existe = $serviciosTecnicos->buscarCorreo($correo);
+        if ($existe === null) {
+            return false;
+        }
+        return true;
     }
 
     public function getCorreo(): string
