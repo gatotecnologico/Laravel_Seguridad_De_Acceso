@@ -35,14 +35,16 @@ class UsuarioModelo
     public function login() {
         $usuarioExiste = $this->serviciosTecnicos->login($this->correo, $this->nip);
         $cantidadIntentos = $this->serviciosTecnicos->getCantidadIntentos($this->correo);
-        if ($usuarioExiste != null && ($cantidadIntentos < 3)) {
+        if ($usuarioExiste === 'Exito' && ($cantidadIntentos < 3)) {
             $this->estado = true;
             $this->serviciosTecnicos->actualizarEstado($this->correo, $this->estado);
-            return 0;
+            return 'Exito';
+        } else if ($usuarioExiste === 'Bloqueado') {
+            return 'Bloqueado';
         } else if ($cantidadIntentos >= 3) {
-            return 1;
-        }else if ($usuarioExiste === null) {
-            return 2;
+            return 'SobrepasaIntentos';
+        } else if ($usuarioExiste === 'Error') {
+            return 'Error';
         }
     }
 

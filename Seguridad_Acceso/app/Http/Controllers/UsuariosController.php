@@ -35,11 +35,13 @@ class UsuariosController extends Controller
         $usuarioModelo = new UsuarioModelo($correo, $contra);
 
         $existe = $usuarioModelo->login();
-        if ($existe === 0) {
+        if ($existe === 'Exito') {
             return view('usuario', ['usuario' => $usuarioModelo]);
-        } else if ($existe === 1) {
+        } else if ($existe === 'SobrepasaIntentos') {
             return back()->with('error', 'Sobrepasaste la cantidad de intentos');
-        }else if ($existe === 2) {
+        } else if ($existe === 'Bloqueado') {
+            return back()->with('error', 'Aun no pasa el tiempo del bloqueo');
+        }else if ($existe === 'Error') {
             return back()->with('error', 'Contraseña o correo invalido');
         }
     }
