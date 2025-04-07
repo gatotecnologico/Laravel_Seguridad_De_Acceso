@@ -16,16 +16,33 @@ class UsuarioModelo
     {
         $this->correo = $correo;
         $this->nip = $nip;
+        $this->cantidadIntentos = 0;
+        $this->estado = false;
         $this->serviciosTecnicos = new ServiciosTecnicos();
     }
 
-    public function registrarUsuario() {
+    public function registrarUsuario()
+    {
         $existe = $this->serviciosTecnicos->buscarCorreo($this->correo);
         if ($existe === null) {
             $this->serviciosTecnicos->insertUsuario($this->correo, $this->nip);
             return false;
         } else {
             return true;
+        }
+    }
+
+    public function login() {
+        $usuarioExiste = $this->serviciosTecnicos->login($this->correo, $this->nip);
+        $cantidadIntentos = $this->serviciosTecnicos->getCantidadIntentos($this->correo);
+        if ($usuarioExiste != null && ($cantidadIntentos < 3)) {
+            $this->estado = true;
+            $this->serviciosTecnicos->actualizarEstado($this->correo, $this->estado);
+            return 0;
+        } else if ($cantidadIntentos >= 3) {
+            return 1;
+        }else if ($usuarioExiste === null) {
+            return 2;
         }
     }
 
