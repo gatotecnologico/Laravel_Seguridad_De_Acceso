@@ -28,7 +28,6 @@ class UsuariosController extends Controller
     }
 
     public function logIn(Request $request) {
-
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
