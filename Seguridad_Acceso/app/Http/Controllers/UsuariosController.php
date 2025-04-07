@@ -42,7 +42,7 @@ class UsuariosController extends Controller
         } else if ($existe === 'Bloqueado') {
             return back()->with('error', 'Aun no pasa el tiempo del bloqueo');
         }else if ($existe === 'Error') {
-            return back()->with('error', 'Contraseña o correo invalido');
+            return back()->with('error', 'Ocurrio un error al iniciar sesion');
         }
     }
 

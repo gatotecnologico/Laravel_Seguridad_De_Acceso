@@ -28,8 +28,8 @@ class ServiciosTecnicos
         $usuario = Usuario::where('correo', $correo)->first();
         $ahora = Carbon::now();
         $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($this->fechaBloqueo));
-        if ($usuario && Hash::check($nip, $usuario->nip)) {
-            // $diferenciaEnMinutos += 30;
+        if ($usuario && Hash::check($nip, $usuario->nip) && ($usuario->estado != 1)) {
+            $diferenciaEnMinutos += 30;
             if ($diferenciaEnMinutos <= 30) {
                 return 'Bloqueado';
             }
@@ -38,7 +38,7 @@ class ServiciosTecnicos
             return 'Exito';
         } else {
             $usuario->cantidad_intentos += 1;
-            if ($usuario->cantidad_intentos === 3) {
+            if ($usuario->cantidad_intentos == 3) {
                 $this->fechaBloqueo = Carbon::now();
                 $usuario->save();
             }
