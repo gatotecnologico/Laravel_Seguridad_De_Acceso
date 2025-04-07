@@ -16,10 +16,13 @@ class UsuarioModelo
     {
         $this->correo = $correo;
         $this->nip = $nip;
+        $this->cantidadIntentos = 0;
+        $this->estado = false;
         $this->serviciosTecnicos = new ServiciosTecnicos();
     }
 
-    public function registrarUsuario() {
+    public function registrarUsuario()
+    {
         $existe = $this->serviciosTecnicos->buscarCorreo($this->correo);
         if ($existe === null) {
             $this->serviciosTecnicos->insertUsuario($this->correo, $this->nip);

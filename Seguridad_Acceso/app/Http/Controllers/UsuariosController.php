@@ -15,7 +15,8 @@ class UsuariosController extends Controller
         $this->serviciosTecnicos = new serviciosTecnicos();
     }
 
-    public function registrarUsuario(Request $request) {
+    public function registrarUsuario(Request $request)
+    {
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
@@ -27,23 +28,35 @@ class UsuariosController extends Controller
         }
     }
 
-    public function logIn(Request $request) {
-
+    public function logIn(Request $request)
+    {
         $correo = $request->input('email');
         $contra = $request->input('password');
         $usuarioModelo = new UsuarioModelo($correo, $contra);
 
         $usuarioExiste = $this->serviciosTecnicos->login($correo, $contra);
         if ($usuarioExiste != null) {
-            return view('usuario', ['usuario'=>$usuarioModelo]);
+            $usuarioModelo->setEstado(true);
+            $this->serviciosTecnicos->actualizarEstado($correo, $usuarioModelo->getEstado());
+            return view('usuario', ['usuario' => $usuarioModelo]);
         } else if ($usuarioExiste === null) {
             return back()->with('error', 'Contraseña o correo invalido');
         }
     }
 
+    public function logOut(Request $request)
+    {
+        $correo = $request->input('email');
+        $usuarioModelo = new UsuarioModelo($correo, '');
+        $usuarioModelo->setEstado(false);
+        if ($this->serviciosTecnicos->actualizarEstado($correo, $usuarioModelo->getEstado())) {
+            return redirect()->route('login')->with('success', 'Sesión cerrada exitosamente');
+        }
+        return back()->with('error', 'Error al cerrar sesión');
+    }
     public function indexUsuario($correo)
     {
         $usuarioModelo = $this->serviciosTecnicos->buscarCorreo($correo);
-        return view('usuario', ['usuario'=>$usuarioModelo]);
+        return view('usuario', ['usuario' => $usuarioModelo]);
     }
 }

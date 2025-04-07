@@ -20,10 +20,14 @@
         <div class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
             <img src="imgs/caballo.webp" alt="caballo foto" class="w-full h-auto object-cover">
         </div>
-        <button type="submit"
-        class="mt-6 w-full py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-xl hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-200 shadow-lg shadow-red-500/30">
-            Cerrar Sesión
-        </button>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <input type="hidden" name="email" value="{{ $usuario->getCorreo() }}">
+            <button type="submit"
+                class="mt-6 w-full py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-xl hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-200 shadow-lg shadow-red-500/30">
+                Cerrar Sesión
+            </button>
+        </form>
     </div>
 </body>
 

@@ -17,3 +17,5 @@ Route::get('/register', function () {
 
 Route::post('/register', [UsuariosController::class, 'registrarUsuario'])->middleware('web');
 
+Route::post('/logout', [UsuariosController::class, 'logOut'])->name('logout');
+

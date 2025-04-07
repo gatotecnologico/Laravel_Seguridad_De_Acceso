@@ -9,14 +9,16 @@ use Illuminate\Support\Facades\Hash;
 
 class ServiciosTecnicos
 {
-    public function insertUsuario($correo, $nip): void {
+    public function insertUsuario($correo, $nip): void
+    {
         $nuevoUsuario = new Usuario();
         $nuevoUsuario->correo = $correo;
         $nuevoUsuario->nip = Hash::make($nip);
         $nuevoUsuario->save();
     }
 
-    public function buscarCorreo($correo):? Usuario {
+    public function buscarCorreo($correo): ?Usuario
+    {
         return Usuario::where('correo', $correo)->first();
     }
 
@@ -28,5 +30,16 @@ class ServiciosTecnicos
         } else {
             return null;
         }
+    }
+
+    public function actualizarEstado($correo, $estado)
+    {
+        $usuario = Usuario::where('correo', $correo)->first();
+        if ($usuario) {
+            $usuario->estado = $estado;
+            $usuario->save();
+            return true;
+        }
+        return false;
     }
 }
