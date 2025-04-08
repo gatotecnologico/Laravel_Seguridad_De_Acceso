@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Database\ServiciosTecnicos;
-use App\ModelosDominio\UsuarioModelo;
+use App\ModelosDominio\ManejadorDeUsuarios;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class UsuariosController extends Controller
 {
-    private ServiciosTecnicos $serviciosTecnicos;
-    public function __construct()
-    {
-        $this->serviciosTecnicos = new serviciosTecnicos();
-    }
-
     public function registrarUsuario(Request $request)
     {
+        $manejaUsuario = new ManejadorDeUsuarios();
         $correo = $request->input('email');
-        $contra = $request->input('password');
-        $usuarioModelo = new UsuarioModelo($correo, $contra);
-        $existe = $usuarioModelo->registrarUsuario();
-        if ($existe === false) {
+        $nip = $request->input('password');
+        $respuesta = $manejaUsuario->registrarUsuario($correo, $nip);
+        if ($respuesta === false) {
             return redirect()->route('login')->with('success', 'Usuario creado con éxito');
         } else {
             return back()->with('error', 'Ya existe un usuario con ese correo');
@@ -31,34 +24,43 @@ class UsuariosController extends Controller
     public function logIn(Request $request)
     {
         $correo = $request->input('email');
-        $contra = $request->input('password');
-        $usuarioModelo = new UsuarioModelo($correo, $contra);
+        $nip = $request->input('password');
+        $manejaUsuario = new ManejadorDeUsuarios();
 
-        $existe = $usuarioModelo->login();
-        if ($existe === 'Exito') {
-            return view('usuario', ['usuario' => $usuarioModelo]);
-        } else if ($existe === 'SobrepasaIntentos') {
-            return back()->with('error', 'Sobrepasaste la cantidad de intentos');
-        } else if ($existe === 'Bloqueado') {
-            return back()->with('error', 'Aun no pasa el tiempo del bloqueo');
-        }else if ($existe === 'Error') {
+        $respuesta = $manejaUsuario->login($correo, $nip);
+
+        if ($respuesta === 'Error') {
             return back()->with('error', 'Ocurrio un error al iniciar sesion');
+        }
+        if ($respuesta === 'Bloqueado') {
+            return back()->with('error', 'Aun no pasa el tiempo del bloqueo');
+        }
+        if ($respuesta === 'SobrepasaIntentos') {
+            return back()->with('error', 'Sobrepasaste la cantidad de intentos');
+        }
+        if ($respuesta === 'Exito') {
+            return view('usuario', ['usuarioModelo' => $respuesta]);
         }
     }
 
     public function logOut(Request $request)
     {
         $correo = $request->input('email');
-        $usuarioModelo = new UsuarioModelo($correo, '');
-        $usuarioModelo->setEstado(false);
-        if ($this->serviciosTecnicos->actualizarEstado($correo, $usuarioModelo->getEstado())) {
+        $manejaUsuario = new ManejadorDeUsuarios();
+        $respuesta = $manejaUsuario->logOut($correo);
+        if ($respuesta === true) {
             return redirect()->route('login')->with('success', 'Sesión cerrada exitosamente');
         }
         return back()->with('error', 'Error al cerrar sesión');
     }
+
     public function indexUsuario($correo)
     {
-        $usuarioModelo = $this->serviciosTecnicos->buscarCorreo($correo);
-        return view('usuario', ['usuario' => $usuarioModelo]);
+        $manejaUsuario = new ManejadorDeUsuarios();
+        $usuarioModelo = $manejaUsuario->getIndexCorreo($correo);
+        if($usuarioModelo === null) {
+            return back()->with('error', 'Ocurrio un error al iniciar sesion');
+        }
+        return view('usuario', ['usuarioModelo' => $usuarioModelo]);
     }
 }

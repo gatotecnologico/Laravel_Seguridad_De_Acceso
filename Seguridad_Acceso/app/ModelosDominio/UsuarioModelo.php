@@ -10,7 +10,6 @@ class UsuarioModelo
     private string $nip;
     private int $cantidadIntentos;
     private bool $estado;
-    private ServiciosTecnicos $serviciosTecnicos;
 
     public function __construct(string $correo, string $nip)
     {
@@ -18,34 +17,6 @@ class UsuarioModelo
         $this->nip = $nip;
         $this->cantidadIntentos = 0;
         $this->estado = false;
-        $this->serviciosTecnicos = new ServiciosTecnicos();
-    }
-
-    public function registrarUsuario()
-    {
-        $existe = $this->serviciosTecnicos->buscarCorreo($this->correo);
-        if ($existe === null) {
-            $this->serviciosTecnicos->insertUsuario($this->correo, $this->nip);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function login() {
-        $usuarioExiste = $this->serviciosTecnicos->login($this->correo, $this->nip);
-        $cantidadIntentos = $this->serviciosTecnicos->getCantidadIntentos($this->correo);
-        if ($usuarioExiste === 'Exito' && ($cantidadIntentos < 3)) {
-            $this->estado = true;
-            $this->serviciosTecnicos->actualizarEstado($this->correo, $this->estado);
-            return 'Exito';
-        } else if ($usuarioExiste === 'Bloqueado') {
-            return 'Bloqueado';
-        } else if ($cantidadIntentos >= 3) {
-            return 'SobrepasaIntentos';
-        } else if ($usuarioExiste === 'Error') {
-            return 'Error';
-        }
     }
 
     public function getCorreo(): string

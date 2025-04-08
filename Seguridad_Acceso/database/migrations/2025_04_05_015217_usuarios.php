@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('correo')->unique();
             $table->string('nip')->unique();
-            $table->integer('cantidad_intentos')->default(0);
+            $table->integer('cantidadIntentos')->default(0);
             $table->boolean('estado')->default(false);
             $table->rememberToken();
             $table->timestamps();

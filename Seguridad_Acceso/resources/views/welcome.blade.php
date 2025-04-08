@@ -13,15 +13,12 @@
             const emailError = document.getElementById('emailError');
             const passwordError = document.getElementById('passwordError');
 
-            // Email regex pattern
             const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-            // Password regex pattern (minimum 8 characters, at least one uppercase, one lowercase, one number)
             const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
             let isValid = true;
 
-            // Email validation
             if (!emailPattern.test(email.value)) {
                 emailError.textContent = 'Por favor, ingrese un correo electrónico válido';
                 emailError.classList.remove('hidden');
@@ -30,7 +27,6 @@
                 emailError.classList.add('hidden');
             }
 
-            // Password validation
             if (!passwordPattern.test(password.value)) {
                 passwordError.textContent =
                     'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número';

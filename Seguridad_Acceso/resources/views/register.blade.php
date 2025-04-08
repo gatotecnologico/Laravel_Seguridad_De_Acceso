@@ -19,7 +19,6 @@
 
             let isValid = true;
 
-            // Email validation
             if (!emailPattern.test(email.value)) {
                 emailError.textContent = 'Por favor, ingrese un correo electrónico válido';
                 emailError.classList.remove('hidden');
@@ -28,7 +27,6 @@
                 emailError.classList.add('hidden');
             }
 
-            // Password validation
             if (!passwordPattern.test(password.value)) {
                 passwordError.textContent = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número';
                 passwordError.classList.remove('hidden');
@@ -37,7 +35,6 @@
                 passwordError.classList.add('hidden');
             }
 
-            // Password confirmation validation
             if (password.value !== passwordConfirm.value) {
                 passwordConfirmError.textContent = 'Las contraseñas no coinciden';
                 passwordConfirmError.classList.remove('hidden');
@@ -149,7 +146,7 @@
 
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">¿Ya tienes una cuenta?</p>
-                <a href="{{ route('login') }}" 
+                <a href="{{ route('login') }}"
                     class="mt-2 inline-block w-full py-3 px-4 border-2 border-purple-500 text-purple-600 font-medium rounded-xl hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-300 transition duration-200">
                     Iniciar sesión
                 </a>
