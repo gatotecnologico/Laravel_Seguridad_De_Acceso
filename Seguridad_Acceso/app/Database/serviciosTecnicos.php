@@ -37,23 +37,27 @@ class ServiciosTecnicos
 
     public function login(UsuarioModelo $usuarioModelo)
     {
-        $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
-        if (!$usuario) {
-            return null;
-        }
-        $usuarioModelo->setEstado($usuario->estado);
-        if (!Hash::check($usuarioModelo->getNip(), $usuario->nip)) {
-            $this->actualizarCantIntentos($usuarioModelo);
-            return null;
-        }
-        if (Hash::check($usuarioModelo->getNip(), $usuario->nip) && ($usuarioModelo->getEstado() != 1)) {
-            if($this->validarBloqueoMinutos($usuarioModelo) === false) {
-                return 'Bloqueado';
+        try {
+            $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
+            if (!$usuario) {
+                return null;
             }
-            $usuario->cantidadIntentos = 0;
-            $usuario->save();
+            $usuarioModelo->setEstado($usuario->estado);
+            if (!Hash::check($usuarioModelo->getNip(), $usuario->nip)) {
+                $this->actualizarCantIntentos($usuarioModelo);
+                return null;
+            }
+            if (Hash::check($usuarioModelo->getNip(), $usuario->nip) && ($usuarioModelo->getEstado() != 1)) {
+                if ($this->validarBloqueoMinutos($usuarioModelo) === false) {
+                    return 'Bloqueado';
+                }
+                $usuario->cantidadIntentos = 0;
+                $usuario->save();
+            }
+            return $usuarioModelo;
+        } catch (\Exception $e) {
+            $this->getRollback();
         }
-        return $usuarioModelo;
     }
 
     public function actualizarEstado(UsuarioModelo $usuarioModelo)
@@ -84,7 +88,8 @@ class ServiciosTecnicos
         }
     }
 
-    public function validarBloqueoMinutos(UsuarioModelo $usuarioModelo) {
+    public function validarBloqueoMinutos(UsuarioModelo $usuarioModelo)
+    {
         $validaUsuario = $this->buscarUsuarioCorreo($usuarioModelo->getCorreo());
         // dd("hola");
         if ($validaUsuario->getCantidadIntentos() >= 3) {
@@ -104,19 +109,23 @@ class ServiciosTecnicos
         return $usuario->cantidadIntentos;
     }
 
-    public function getBeginTran() {
+    public function getBeginTran()
+    {
         return DB::beginTransaction();
     }
 
-    public function getRollback() {
+    public function getRollback()
+    {
         return DB::rollBack();
     }
 
-    public function getCommit() {
+    public function getCommit()
+    {
         DB::commit();
     }
 
-    public function bloquearUsuario($correo) {
+    public function bloquearUsuario($correo)
+    {
         Usuario::where('correo', $correo)->lockForUpdate()->first();
     }
 }

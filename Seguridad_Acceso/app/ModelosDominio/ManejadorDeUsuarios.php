@@ -24,23 +24,30 @@ class ManejadorDeUsuarios
 
     public function login($correo, $nip) {
         $serviciosTecnicos = new ServiciosTecnicos();
+        $serviciosTecnicos->getBeginTran();
+        $serviciosTecnicos->bloquearUsuario($correo);
         $credenciales = new UsuarioModelo($correo, $nip);
         $usuarioModelo = $serviciosTecnicos->login($credenciales);
         if($usuarioModelo === null) {
+            $serviciosTecnicos->getRollback();
             return 'Error';
         }
         if($usuarioModelo === 'Bloqueado') {
+            $serviciosTecnicos->getRollback();
             return 'Bloqueado';
         }
         if($usuarioModelo->getEstado() === true) {
             $serviciosTecnicos->actualizarCantIntentos($usuarioModelo);
+            $serviciosTecnicos->getCommit();
             return 'Error';
         }
         if($usuarioModelo->getCantidadIntentos() >= 3) {
+            $serviciosTecnicos->getRollback();
             return 'SobrepasaIntentos';
         }
         $usuarioModelo->setEstado(true);
         $serviciosTecnicos->actualizarEstado($usuarioModelo);
+        $serviciosTecnicos->getCommit();
         return 'Exito';
     }
 
