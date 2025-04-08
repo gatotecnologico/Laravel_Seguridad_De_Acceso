@@ -26,8 +26,7 @@ class ManejadorDeUsuarios
         if($usuarioModelo === null) {
             return 'Error';
         }
-        // dd($usuarioModelo->getEstado());
-        if($usuarioModelo->getEstado() == true) {
+        if($usuarioModelo->getEstado() === true) {
             $serviciosTecnicos->actualizarCantIntentos($usuarioModelo);
             return 'Error';
         }

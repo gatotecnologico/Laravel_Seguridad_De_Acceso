@@ -34,7 +34,7 @@ class ServiciosTecnicos
     public function login(UsuarioModelo $usuarioModelo)
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
-        // dd($usuario->toArray());
+        $usuarioModelo->setEstado($usuario->estado);
         if (!$usuario) {
             return null;
         }
@@ -46,7 +46,6 @@ class ServiciosTecnicos
             if($this->validarBloqueoMinutos($usuarioModelo) === false) {
                 return 'Bloqueado';
             }
-            // $diferenciaEnMinutos += 30;
             $usuario->cantidadIntentos = 0;
             $usuario->save();
         }
@@ -60,6 +59,13 @@ class ServiciosTecnicos
             $usuario->estado = $usuarioModelo->getEstado();
             $usuario->save();
         }
+    }
+
+
+    public function obtenerEstadoActual(UsuarioModelo $usuarioModelo)
+    {
+        $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
+        return $usuario->estado;
     }
 
     public function actualizarCantIntentos(UsuarioModelo $usuarioModelo)
@@ -79,6 +85,7 @@ class ServiciosTecnicos
         if ($validaUsuario->getCantidadIntentos() >= 3) {
             $ahora = Carbon::now();
             $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($this->fechaBloqueo));
+            // $diferenciaEnMinutos += 30;
             if ($diferenciaEnMinutos <= 30) {
                 return false;
             }
