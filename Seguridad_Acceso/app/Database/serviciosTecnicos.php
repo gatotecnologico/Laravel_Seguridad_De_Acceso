@@ -34,10 +34,10 @@ class ServiciosTecnicos
     public function login(UsuarioModelo $usuarioModelo)
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
-        $usuarioModelo->setEstado($usuario->estado);
         if (!$usuario) {
             return null;
         }
+        $usuarioModelo->setEstado($usuario->estado);
         if (!Hash::check($usuarioModelo->getNip(), $usuario->nip)) {
             $this->actualizarCantIntentos($usuarioModelo);
             return null;
