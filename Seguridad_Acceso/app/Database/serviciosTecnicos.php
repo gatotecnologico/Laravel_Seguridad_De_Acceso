@@ -22,35 +22,35 @@ class ServiciosTecnicos
     public function buscarUsuarioCorreo($correo): ?UsuarioModelo
     {
         $usuario = Usuario::where('correo', $correo)->first();
+        if (!$usuario) {
+            return null;
+        }
         $usuarioModelo = new UsuarioModelo($usuario->correo, $usuario->nip);
-        $usuarioModelo->setCantidadIntentos($usuario->cantidadIntentos);
-        $usuarioModelo->setEstado($usuario->estado);
+        $usuarioModelo->setCantidadIntentos($usuario->cantidadIntentos ?? 0); // Set default value to 0
+        $usuarioModelo->setEstado($usuario->estado ?? 0); // Set default value to 0
         return $usuarioModelo;
     }
 
     public function login(UsuarioModelo $usuarioModelo)
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
-        // dd($usuario);
-        if ($usuario->correo === null) {
+        // dd($usuario->toArray());
+        if (!$usuario) {
             return null;
         }
-
+        if (!Hash::check($usuarioModelo->getNip(), $usuario->nip)) {
+            $this->actualizarCantIntentos($usuarioModelo);
+            return null;
+        }
         if (Hash::check($usuarioModelo->getNip(), $usuario->nip) && ($usuarioModelo->getEstado() != 1)) {
+            if($this->validarBloqueoMinutos($usuarioModelo) === false) {
+                return 'Bloqueado';
+            }
             // $diferenciaEnMinutos += 30;
-            $usuario->cantidad_intentos = 0;
+            $usuario->cantidadIntentos = 0;
             $usuario->save();
         }
         return $usuarioModelo;
-        // else {
-        //     $usuario->cantidad_intentos += 1;
-        //     if ($usuario->cantidad_intentos == 3) {
-        //         $this->fechaBloqueo = Carbon::now();
-        //         // $usuario->save();
-        //     }
-        //     $usuario->save();
-        //     return 'Error';
-        // }
     }
 
     public function actualizarEstado(UsuarioModelo $usuarioModelo)
@@ -66,8 +66,8 @@ class ServiciosTecnicos
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
         if ($usuario) {
-            $usuario->cantidadIntentos + 1;
-            if ($usuario->cantidad_intentos === 3) {
+            $usuario->cantidadIntentos = ($usuario->cantidadIntentos ?? 0) + 1; // Fix increment logic
+            if ($usuario->cantidadIntentos === 3) {
                 $this->fechaBloqueo = Carbon::now();
             }
             $usuario->save();
@@ -75,7 +75,8 @@ class ServiciosTecnicos
     }
 
     public function validarBloqueoMinutos(UsuarioModelo $usuarioModelo) {
-        if ($usuarioModelo->getCantidadIntentos() === 3) {
+        $validaUsuario = $this->buscarUsuarioCorreo($usuarioModelo->getCorreo());
+        if ($validaUsuario->getCantidadIntentos() >= 3) {
             $ahora = Carbon::now();
             $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($this->fechaBloqueo));
             if ($diferenciaEnMinutos <= 30) {
@@ -88,6 +89,6 @@ class ServiciosTecnicos
     public function getCantidadIntentos($correo): int
     {
         $usuario = Usuario::where('correo', $correo)->first();
-        return $usuario->cantidad_intentos;
+        return $usuario->cantidadIntentos;
     }
 }

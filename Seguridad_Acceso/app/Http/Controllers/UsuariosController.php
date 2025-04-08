@@ -39,7 +39,8 @@ class UsuariosController extends Controller
             return back()->with('error', 'Sobrepasaste la cantidad de intentos');
         }
         if ($respuesta === 'Exito') {
-            return view('usuario', ['usuarioModelo' => $respuesta]);
+            $usuarioModelo = $manejaUsuario->getIndexCorreo($correo);
+            return view('usuario', ['usuario' => $usuarioModelo]);
         }
     }
 
@@ -58,9 +59,8 @@ class UsuariosController extends Controller
     {
         $manejaUsuario = new ManejadorDeUsuarios();
         $usuarioModelo = $manejaUsuario->getIndexCorreo($correo);
-        if($usuarioModelo === null) {
+        if ($usuarioModelo === null) {
             return back()->with('error', 'Ocurrio un error al iniciar sesion');
         }
-        return view('usuario', ['usuarioModelo' => $usuarioModelo]);
     }
 }

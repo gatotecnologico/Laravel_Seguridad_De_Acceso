@@ -11,7 +11,8 @@ class ManejadorDeUsuarios
         $serviciosTecnicos = new ServiciosTecnicos();
         $usuario = $serviciosTecnicos->buscarUsuarioCorreo($correo);
         if ($usuario === null) {
-            $serviciosTecnicos->insertUsuario($correo, $nip);
+            $usuarioModelo = new UsuarioModelo($correo, $nip);
+            $serviciosTecnicos->insertUsuario($usuarioModelo);
             return false;
         } else {
             return true;
@@ -22,19 +23,19 @@ class ManejadorDeUsuarios
         $serviciosTecnicos = new ServiciosTecnicos();
         $credenciales = new UsuarioModelo($correo, $nip);
         $usuarioModelo = $serviciosTecnicos->login($credenciales);
-        // $usuarioModelo->setCantidadIntentos($usuario->cantidadIntentos);
-        // $usuarioModelo->setEstado($usuario->estado);
         if($usuarioModelo === null) {
             return 'Error';
         }
-        if($usuarioModelo->getCantidadIntentos() >= 3) {
-            return 'SobrepasaIntentos';
-        }
-        if($usuarioModelo->getEstado() === 1) {
+        // dd($usuarioModelo->getEstado());
+        if($usuarioModelo->getEstado() == true) {
             $serviciosTecnicos->actualizarCantIntentos($usuarioModelo);
             return 'Error';
-        }if($serviciosTecnicos->validarBloqueoMinutos($usuarioModelo) === false) {
+        }
+        if($usuarioModelo === 'Bloqueado') {
             return 'Bloqueado';
+        }
+        if($usuarioModelo->getCantidadIntentos() >= 3) {
+            return 'SobrepasaIntentos';
         }
         $usuarioModelo->setEstado(true);
         $serviciosTecnicos->actualizarEstado($usuarioModelo);
@@ -44,6 +45,7 @@ class ManejadorDeUsuarios
     public function logOut($correo) {
         $serviciosTecnicos = new ServiciosTecnicos();
         $usuarioModelo = $serviciosTecnicos->buscarUsuarioCorreo($correo);
+        $usuarioModelo->setEstado(false);
         $serviciosTecnicos->actualizarEstado($usuarioModelo);
         return true;
     }

@@ -15,7 +15,7 @@
             Bienvenido
         </h1>
         <h2 class="text-2xl font-semibold bg-gradient-to-r from-green-500 to-green-700 bg-clip-text text-transparent">
-            {{ $usuarioModelo->getCorreo() }}
+            {{ $usuario->getCorreo() }}
         </h2>
         <div class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
             <img src="imgs/caballo.webp" alt="caballo foto" class="w-full h-auto object-cover">
