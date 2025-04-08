@@ -17,7 +17,7 @@ class UsuariosController extends Controller
         if ($respuesta === false) {
             return redirect()->route('login')->with('success', 'Usuario creado con éxito');
         } else {
-            return back()->with('error', 'Ya existe un usuario con ese correo');
+            return back()->with('error', 'Error al registrarse');
         }
     }
 

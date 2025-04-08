@@ -13,7 +13,10 @@ class ManejadorDeUsuarios
         $usuario = $serviciosTecnicos->buscarUsuarioCorreo($correo);
         if ($usuario === null) {
             $usuarioModelo = new UsuarioModelo($correo, $nip);
-            $serviciosTecnicos->insertUsuario($usuarioModelo);
+            $respuesta = $serviciosTecnicos->insertUsuario($usuarioModelo);
+            if ($respuesta===true) {
+                return true;
+            }
             $serviciosTecnicos->getCommit();
             return false;
         } else {

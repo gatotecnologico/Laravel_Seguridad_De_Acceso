@@ -11,15 +11,17 @@ use Illuminate\Support\Facades\DB;
 class ServiciosTecnicos
 {
     private $fechaBloqueo;
-    public function insertUsuario(UsuarioModelo $usuarioModelo): void
+    public function insertUsuario(UsuarioModelo $usuarioModelo)
     {
         try {
             $nuevoUsuario = new Usuario();
             $nuevoUsuario->correo = $usuarioModelo->getCorreo();
             $nuevoUsuario->nip = Hash::make($usuarioModelo->getNip());
             $nuevoUsuario->save();
+            return false;
         } catch (\Exception $e) {
             $this->getRollback();
+            return true;
         }
     }
 
