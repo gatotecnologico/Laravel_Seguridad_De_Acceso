@@ -9,12 +9,15 @@ class ManejadorDeUsuarios
     public function registrarUsuario($correo, $nip)
     {
         $serviciosTecnicos = new ServiciosTecnicos();
+        $serviciosTecnicos->getBeginTran();
         $usuario = $serviciosTecnicos->buscarUsuarioCorreo($correo);
         if ($usuario === null) {
             $usuarioModelo = new UsuarioModelo($correo, $nip);
             $serviciosTecnicos->insertUsuario($usuarioModelo);
+            $serviciosTecnicos->getCommit();
             return false;
         } else {
+            $serviciosTecnicos->getRollback();
             return true;
         }
     }
@@ -26,12 +29,12 @@ class ManejadorDeUsuarios
         if($usuarioModelo === null) {
             return 'Error';
         }
+        if($usuarioModelo === 'Bloqueado') {
+            return 'Bloqueado';
+        }
         if($usuarioModelo->getEstado() === true) {
             $serviciosTecnicos->actualizarCantIntentos($usuarioModelo);
             return 'Error';
-        }
-        if($usuarioModelo === 'Bloqueado') {
-            return 'Bloqueado';
         }
         if($usuarioModelo->getCantidadIntentos() >= 3) {
             return 'SobrepasaIntentos';

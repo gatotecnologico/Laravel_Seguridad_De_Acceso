@@ -2,21 +2,25 @@
 
 namespace App\Database;
 
-use Exception;
 use App\Models\Usuario;
 use App\ModelosDominio\UsuarioModelo;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ServiciosTecnicos
 {
     private $fechaBloqueo;
     public function insertUsuario(UsuarioModelo $usuarioModelo): void
     {
-        $nuevoUsuario = new Usuario();
-        $nuevoUsuario->correo = $usuarioModelo->getCorreo();
-        $nuevoUsuario->nip = Hash::make($usuarioModelo->getNip());
-        $nuevoUsuario->save();
+        try {
+            $nuevoUsuario = new Usuario();
+            $nuevoUsuario->correo = $usuarioModelo->getCorreo();
+            $nuevoUsuario->nip = Hash::make($usuarioModelo->getNip());
+            $nuevoUsuario->save();
+        } catch (\Exception $e) {
+            $this->getRollback();
+        }
     }
 
     public function buscarUsuarioCorreo($correo): ?UsuarioModelo
@@ -82,6 +86,7 @@ class ServiciosTecnicos
 
     public function validarBloqueoMinutos(UsuarioModelo $usuarioModelo) {
         $validaUsuario = $this->buscarUsuarioCorreo($usuarioModelo->getCorreo());
+        // dd("hola");
         if ($validaUsuario->getCantidadIntentos() >= 3) {
             $ahora = Carbon::now();
             $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($this->fechaBloqueo));
@@ -97,5 +102,21 @@ class ServiciosTecnicos
     {
         $usuario = Usuario::where('correo', $correo)->first();
         return $usuario->cantidadIntentos;
+    }
+
+    public function getBeginTran() {
+        return DB::beginTransaction();
+    }
+
+    public function getRollback() {
+        return DB::rollBack();
+    }
+
+    public function getCommit() {
+        DB::commit();
+    }
+
+    public function bloquearUsuario($correo) {
+        Usuario::where('correo', $correo)->lockForUpdate()->first();
     }
 }
