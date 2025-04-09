@@ -52,6 +52,7 @@ class ServiciosTecnicos
                 if ($this->validarBloqueoMinutos($usuarioModelo) === false) {
                     return 'Bloqueado';
                 }
+                $usuario->fechaBloqueo = null;
                 $usuario->cantidadIntentos = 0;
                 $usuario->save();
             }
@@ -93,9 +94,9 @@ class ServiciosTecnicos
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
 
-        if ($usuarioModelo->getCantidadIntentos() >= 3) {
+        if ($usuario->cantidadIntentos >= 3) {
             $ahora = Carbon::now();
-            // $usuario->fechaBloqueo->addMinutes(30);
+            // $usuario->fechaBloqueo = Carbon::now()->addMinutes(30);
             $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($usuario->fechaBloqueo));
             if ($diferenciaEnMinutos <= 30) {
                 return false;

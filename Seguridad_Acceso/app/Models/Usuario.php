@@ -15,6 +15,12 @@ class Usuario extends Authenticatable
         'password',
     ];
 
+    protected $dates = [
+        'fechaBloqueo',
+        'created_at',
+        'updated_at',
+    ];
+
     protected $hidden = [
         'password',
     ];
