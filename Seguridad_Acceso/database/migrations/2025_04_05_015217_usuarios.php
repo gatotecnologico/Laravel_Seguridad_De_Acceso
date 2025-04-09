@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nip')->unique();
             $table->integer('cantidadIntentos')->default(0);
             $table->boolean('estado')->default(false);
+            $table->timestamp('fechaBloqueo')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

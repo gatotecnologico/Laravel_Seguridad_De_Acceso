@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class ServiciosTecnicos
 {
-    private $fechaBloqueo;
     public function insertUsuario(UsuarioModelo $usuarioModelo)
     {
         try {
@@ -32,8 +31,8 @@ class ServiciosTecnicos
             return null;
         }
         $usuarioModelo = new UsuarioModelo($usuario->correo, $usuario->nip);
-        $usuarioModelo->setCantidadIntentos($usuario->cantidadIntentos ?? 0); // Set default value to 0
-        $usuarioModelo->setEstado($usuario->estado ?? 0); // Set default value to 0
+        $usuarioModelo->setCantidadIntentos($usuario->cantidadIntentos ?? 0);
+        $usuarioModelo->setEstado($usuario->estado ?? 0);
         return $usuarioModelo;
     }
 
@@ -82,9 +81,9 @@ class ServiciosTecnicos
     {
         $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
         if ($usuario) {
-            $usuario->cantidadIntentos = ($usuario->cantidadIntentos ?? 0) + 1; // Fix increment logic
+            $usuario->cantidadIntentos = ($usuario->cantidadIntentos ?? 0) + 1;
             if ($usuario->cantidadIntentos === 3) {
-                $this->fechaBloqueo = Carbon::now();
+                $usuario->fechaBloqueo = Carbon::now();
             }
             $usuario->save();
         }
@@ -92,12 +91,12 @@ class ServiciosTecnicos
 
     public function validarBloqueoMinutos(UsuarioModelo $usuarioModelo)
     {
-        $validaUsuario = $this->buscarUsuarioCorreo($usuarioModelo->getCorreo());
-        // dd("hola");
-        if ($validaUsuario->getCantidadIntentos() >= 3) {
+        $usuario = Usuario::where('correo', $usuarioModelo->getCorreo())->first();
+
+        if ($usuarioModelo->getCantidadIntentos() >= 3) {
             $ahora = Carbon::now();
-            $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($this->fechaBloqueo));
-            // $diferenciaEnMinutos += 30;
+            // $usuario->fechaBloqueo->addMinutes(30);
+            $diferenciaEnMinutos = $ahora->diffInMinutes(Carbon::parse($usuario->fechaBloqueo));
             if ($diferenciaEnMinutos <= 30) {
                 return false;
             }

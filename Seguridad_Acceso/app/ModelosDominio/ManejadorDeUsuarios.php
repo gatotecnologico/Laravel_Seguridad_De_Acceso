@@ -32,7 +32,7 @@ class ManejadorDeUsuarios
         $credenciales = new UsuarioModelo($correo, $nip);
         $usuarioModelo = $serviciosTecnicos->login($credenciales);
         if($usuarioModelo === null) {
-            $serviciosTecnicos->getRollback();
+            $serviciosTecnicos->getCommit();
             return 'Error';
         }
         if($usuarioModelo === 'Bloqueado') {

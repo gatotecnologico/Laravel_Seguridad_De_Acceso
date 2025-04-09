@@ -3,6 +3,7 @@
 namespace App\ModelosDominio;
 
 use App\Database\ServiciosTecnicos;
+use DateTime;
 
 class UsuarioModelo
 {
@@ -10,6 +11,7 @@ class UsuarioModelo
     private string $nip;
     private int $cantidadIntentos;
     private bool $estado;
+    private DateTime $fechaBloqueo;
 
     public function __construct(string $correo, string $nip)
     {
@@ -17,6 +19,7 @@ class UsuarioModelo
         $this->nip = $nip;
         $this->cantidadIntentos = 0;
         $this->estado = false;
+        $this->fechaBloqueo = new DateTime();
     }
 
     public function getCorreo(): string
@@ -57,5 +60,15 @@ class UsuarioModelo
     public function setEstado(bool $estado): void
     {
         $this->estado = $estado;
+    }
+
+    public function getFechaBloqueo(): DateTime
+    {
+        return $this->fechaBloqueo;
+    }
+
+    public function setFechaBloqueo(DateTime $fechaBloqueo): void
+    {
+        $this->fechaBloqueo = $fechaBloqueo;
     }
 }
